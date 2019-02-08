@@ -15,25 +15,25 @@
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <Deterministic>true</Deterministic>
     <IsWebBootstrapper>false</IsWebBootstrapper>
-    <PublishUrl>ftp://192.168.1.102:22/fx/</PublishUrl>
+    <PublishUrl>ftp://mdlserver.ddns.net:22/fx/</PublishUrl>
     <Install>true</Install>
-    <InstallFrom>Unc</InstallFrom>
-    <UpdateEnabled>true</UpdateEnabled>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
     <UpdateMode>Background</UpdateMode>
     <UpdateInterval>7</UpdateInterval>
     <UpdateIntervalUnits>Days</UpdateIntervalUnits>
     <UpdatePeriodically>true</UpdatePeriodically>
     <UpdateRequired>true</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <InstallUrl>\\192.168.1.102\fx\</InstallUrl>
     <SupportUrl>ftp://mdlserver.ddns.net:80/Emma</SupportUrl>
     <TargetCulture>fr-FR</TargetCulture>
     <ProductName>Emma</ProductName>
     <PublisherName>CochonCorp</PublisherName>
     <MinimumRequiredVersion>2.6.0.0</MinimumRequiredVersion>
     <WebPage>publish.htm</WebPage>
-    <ApplicationRevision>1</ApplicationRevision>
-    <ApplicationVersion>2.6.0.%2a</ApplicationVersion>
+    <AutorunEnabled>true</AutorunEnabled>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>3.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -90,7 +90,8 @@
     <ManifestCertificateThumbprint>D62363913F07F21B35D8C7B54E575D5C7BE3E221</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>Emma_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>
+    </ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <AssemblyOriginatorKeyFile>Emma_TemporaryKey.pfx</AssemblyOriginatorKeyFile>
@@ -103,6 +104,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Messaging" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
@@ -136,6 +138,24 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Application.myapp</DependentUpon>
     </Compile>
+    <Compile Include="My Project\EsearchB.designer.vb">
+      <DependentUpon>EsearchB.vb</DependentUpon>
+    </Compile>
+    <Compile Include="My Project\EsearchB.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My Project\Form1.Designer.vb">
+      <DependentUpon>Form1.vb</DependentUpon>
+    </Compile>
+    <Compile Include="My Project\Form1.vb">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="My Project\Morpion.Designer.vb">
+      <DependentUpon>Morpion.vb</DependentUpon>
+    </Compile>
+    <Compile Include="My Project\Morpion.vb">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="My Project\Resources.Designer.vb">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -150,6 +170,15 @@
   <ItemGroup>
     <EmbeddedResource Include="Emma.resx">
       <DependentUpon>Emma.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My Project\EsearchB.resx">
+      <DependentUpon>EsearchB.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My Project\Form1.resx">
+      <DependentUpon>Form1.vb</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="My Project\Morpion.resx">
+      <DependentUpon>Morpion.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="My Project\Resources.resx">
       <Generator>VbMyResourcesResXFileCodeGenerator</Generator>
@@ -167,6 +196,7 @@
       <Generator>MyApplicationCodeGenerator</Generator>
       <LastGenOutput>Application.Designer.vb</LastGenOutput>
     </None>
+    <None Include="My Project\DataSources\MorpionGrid.datasource" />
     <None Include="My Project\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <CustomToolNamespace>My</CustomToolNamespace>
@@ -193,6 +223,11 @@
     <None Include="Resources\MDLserverOK.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\emmaeclair.exe" />
+    <None Include="Resources\Compliments.txt" />
+    <None Include="Resources\MotsPendu.txt" />
+    <None Include="Resources\Image1.bmp" />
+    <None Include="Resources\flechebas.png" />
     <Content Include="smiley_2.png.ico" />
   </ItemGroup>
   <ItemGroup>

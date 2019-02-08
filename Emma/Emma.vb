@@ -10,29 +10,36 @@ Public Class Emma
 
 
     Dim user = Environment.UserName
-    Dim flag As String = "+w" + user
+    Dim pageMorpion As Morpion
+    Dim pageEsearchB As EsearchB = New EsearchB
+    Dim flag As String = "+w" + user + "+"
+    Dim wanttoplay As String = ""
+    Dim mot As String
     Const ERREUR As String = "Essaie de relancer l'app et contacte FX ou Leon"
     Dim Mytooltip As New ToolTip
+    Dim lettres(25) As Boolean ''= false by default
 
-    Dim compliment(1)
-    Dim nb_compliment As Integer
+    Dim compliment As String()
     Dim shutup As Boolean = False
 
     Dim Flux As NetworkStream
-    Dim FluxWriter As StreamWriter
-    Dim FluxReader As StreamReader
+    Public FluxWriter As StreamWriter
+    Public FluxReader As StreamReader
     Public TCPClient As TcpClient = New TcpClient
     'Public TCPListener As TcpListener = New TcpListener(IPAddress.Any, 11000)
     Public ThreadReceive As System.Threading.Thread = New Threading.Thread(AddressOf Receive_message)
+    Public ThreadFind As System.Threading.Thread = New Threading.Thread(AddressOf Find_server)
     Public ThreadConnect As System.Threading.Thread = New Threading.Thread(AddressOf Connect_server)
+    Public ThreadDelonQuit As System.Threading.Thread = New Threading.Thread(AddressOf Delete_on_quit)
     Dim MdlIpAdress As IPAddress
     Dim EtatConnexion As Integer = 0
     '- 0 server introuvable
-    '- 1 trouvé mais TCP unlinked
-    '- 2 trouvé TCP en cours
-    '- 3 TCP linked mais Flux KO
-    '- 4 Connecté mmais Reception KO
-    '- 5 Connecté
+    '- 1 en recherche du server
+    '- 2 trouvé mais TCP unlinked
+    '- 3 trouvé TCP en cours
+    '- 4 TCP linked mais Flux KO
+    '- 5 Connecté mmais Reception KO
+    '- 6 Connecté
 
     Delegate Sub SetTextDelegate(ByVal TB As TextBox, ByVal sText As String)
     Private SetText As New SetTextDelegate(AddressOf SetRecuTextBoxText)
@@ -43,7 +50,8 @@ Public Class Emma
 
     Private Sub Emma_Load(ByVal sender As System.Object, ByVal e As System.EventArgs) _
                            Handles MyBase.Load
-        'Description de l'app
+
+        'Visuel de l'app
         Me.Height -= 100
         NotifyIcon.Text = "Mot du jour"
         Titre.Text = "Bienvenue sur la super app de" + vbCrLf + "Fx & Leon"
@@ -52,11 +60,8 @@ Public Class Emma
         Titre.CharacterCasing = CharacterCasing.Upper
         Button_Accept.Text = "J'aime bien votre appli, vous etes des gens biens :-)"
         Button_quit.Text = "Nan, C'est tout nul. Ciao"
-        Button_Compliment.Text = "C"
-        Options.Text = "Opt"
         Button_msg.Text = "Envoyer un mot d'amour"
-        CheckBoot.Text = "Lancer au demarrage de l'ordinateur"
-        CheckCompliment.Text = "Compliments (toutes les x min)"
+        CheckBoot.Text = "Lancer au demarrage"
         Mytooltip.ShowAlways = True
         Mytooltip.IsBalloon = True
         Mytooltip.UseFading = True
@@ -71,38 +76,13 @@ Public Class Emma
         CreateContextMenu()
         Randomize()
 
-        'Creation du fichier de proverbes s'il n'existe pas
-        If System.IO.File.Exists(Application.StartupPath() + "\Compliments.txt") = False Then
-            Dim Swriter As FileStream = File.Create(Application.StartupPath() + "\Compliments.txt")
-            Dim info As Byte() = New UTF8Encoding(True).GetBytes("Il faut rajouter des compliments ou recuperer le fichier de compliments aupres de FX")
-            Swriter.Write(info, 0, info.Length)
-            Swriter.Close()
-        End If
-
-
-        'Lecture et stockage des proverbes
-        Dim SReader = My.Computer.FileSystem.OpenTextFileReader(Application.StartupPath() + "\Compliments.txt")
-        While Not SReader.EndOfStream
-            SReader.ReadLine()
-            nb_compliment += 1
-        End While
-        ReDim compliment(nb_compliment)
-
-        Dim i = 0
-        SReader = My.Computer.FileSystem.OpenTextFileReader(Application.StartupPath() + "\Compliments.txt")
-        While Not SReader.EndOfStream
-            compliment(i) = SReader.ReadLine()
-            Interprete_perso(compliment(i))
-            i += 1
-        End While
-        SReader.Close()
-
         'Lancement des compliments
+        compliment = Split(My.Resources.Compliments, vbCrLf)
         MyTimer.Interval = 60000 * interv_comp.Text + 1
         MyTimer.Stop()
 
         'Lancement du client
-        'TCPListener.Start()
+        'TCPListener.Start() 'a ajouter pour pouvoir faire du peerTopeer
         flager.Start()
 
     End Sub
@@ -113,30 +93,141 @@ Public Class Emma
         'Define New Context Menu and Menu Item 
         Dim contextMenu As New ContextMenu
         Dim MenuEclair As New MenuItem("Eclair")
+        Dim MenuPendu As New MenuItem("Pendu")
+        Dim MenuMorpion As New MenuItem("Morpion")
+        Dim MenuEsearchB As New MenuItem("Emma cherche Blandine")
         Dim MenuExit As New MenuItem("Exit")
         contextMenu.MenuItems.Add(MenuEclair)
+        contextMenu.MenuItems.Add(MenuPendu)
+        contextMenu.MenuItems.Add(MenuMorpion)
+        contextMenu.MenuItems.Add(MenuEsearchB)
         contextMenu.MenuItems.Add(MenuExit)
-
 
 
         NotifyIcon.ContextMenu = contextMenu
 
         'Add functionality for menu Item click 
         AddHandler MenuEclair.Click, AddressOf MenuEclair_Click
-        AddHandler MenuExit.Click, AddressOf MenuExit_Click
+        AddHandler MenuPendu.Click, AddressOf MenuPendu_Click
+        AddHandler MenuMorpion.Click, AddressOf MenuMorpion_Click
+        AddHandler MenuEsearchB.Click, AddressOf MenuEsearchB_Click
+        AddHandler MenuExit.Click, AddressOf Button_quit_Click
 
     End Sub
+
 
     Private Sub MenuEclair_Click(ByVal sender As Object, ByVal e As System.EventArgs)
+        Try
+            My.Computer.FileSystem.WriteAllBytes(Path.GetTempPath & "\EmmaEclairTemp.exe", My.Resources.emmaeclair, False)
+        Catch
+        End Try
+        Shell(Path.GetTempPath & "\EmmaEclairTemp.exe")
+
+        ThreadDelonQuit = New Threading.Thread(AddressOf Delete_on_quit)
+        ThreadDelonQuit.Start(Path.GetTempPath & "\EmmaEclairTemp.exe")
 
     End Sub
 
-    Private Sub MenuExit_Click(ByVal sender As Object, ByVal e As System.EventArgs)
-        shutup = True
-        NotifyIcon.BalloonTipText = "Au revoir"
-        NotifyIcon.ShowBalloonTip(2000)
-        Threading.Thread.Sleep(2000)
-        Me.Close()
+
+    Private Sub MenuPendu_Click(ByVal sender As Object, ByVal e As System.EventArgs)
+        Titre.Text = "Pendu lancé"
+        LettresGrid.Visible = True
+        BarPendu.Visible = True
+        'BarPendu.BackColor = Color.FromArgb(128, 255, 0, 1)
+        mot = Split(My.Resources.MotsPendu, vbCrLf)(Rnd() * 600)
+        TextRecu.Text = "_"
+        For i = 1 To mot.Length - 1
+            TextRecu.Text += "_"
+        Next
+    End Sub
+
+
+    Private Sub UneLettre_Click(sender As Object, e As EventArgs) Handles ButtonA.Click, ButtonB.Click, ButtonZ.Click, ButtonY.Click, ButtonX.Click, ButtonW.Click, ButtonV.Click, ButtonU.Click, ButtonT.Click, ButtonS.Click, ButtonR.Click, ButtonQ.Click, ButtonP.Click, ButtonO.Click, ButtonN.Click, ButtonM.Click, ButtonL.Click, ButtonK.Click, ButtonJ.Click, ButtonI.Click, ButtonH.Click, ButtonG.Click, ButtonF.Click, ButtonE.Click, ButtonD.Click, ButtonC.Click
+        lettres(Convert.ToInt32(sender.ToString.Last) - 65) = True
+        sender.Enabled = False
+        sender.text = sender.text.tolower()
+
+        Dim plusun = True
+        For i = 0 To mot.Length - 1
+            If mot(i) = sender.text Or ((mot(i) = "é" Or mot(i) = "è" Or mot(i) = "ê") And sender.text = "e") Or (mot(i) = "ô" And sender.text = "o") Or (mot(i) = "î" And sender.text = "i") Then
+                plusun = False
+                Exit For
+            End If
+        Next
+        If plusun Then
+            BarPendu.Value += 1
+        End If
+
+        TextRecu.Text = ""
+        Dim win = True
+        For i = 0 To mot.Length - 1
+            If ((mot(i) = "é" Or mot(i) = "è" Or mot(i) = "ê") And lettres(4)) Or (mot(i) = "ô" And lettres(14)) Or (mot(i) = "î" And lettres(8)) Then
+                TextRecu.Text += mot(i)
+            ElseIf mot(i) = "é" Or mot(i) = "è" Or mot(i) = "ê" Or mot(i) = "ô" Or mot(i) = "î" Then
+                TextRecu.Text += "_"
+            ElseIf lettres(Convert.ToInt32(mot(i)) - 97) Then
+                TextRecu.Text += mot(i)
+            Else
+                TextRecu.Text += "_"
+                win = False
+            End If
+        Next
+
+        If win Then
+            LettresGrid.Visible = False
+            BarPendu.Visible = False
+            TextRecu.Text += vbCrLf + "BRAVO !!"
+            For i = 0 To 25
+                lettres.SetValue(False, i)
+                CType(Me.Controls.Find(String.Format("Button{0}", Convert.ToChar(i + 65)), True)(0), Button).Enabled = True
+            Next
+        End If
+
+        If BarPendu.Value = 10 Then
+            LettresGrid.Visible = False
+            TextRecu.Text = mot + vbCrLf + "PERDU !!"
+            For i = 0 To 25
+                lettres.SetValue(False, i)
+                CType(Me.Controls.Find(String.Format("Button{0}", Convert.ToChar(i + 65)), True)(0), Button).Enabled = True
+            Next
+        End If
+    End Sub
+
+    Private Sub MenuMorpion_Click()
+        Titre.Text = "Morpion lancé"
+        pageMorpion = New Morpion
+        pageMorpion.Show(Me)
+        If (wanttoplay <> "") Then
+            pageMorpion.Morpion_Load_Rep(wanttoplay)
+        End If
+    End Sub
+
+    Private Sub MenuEsearchB_Click()
+        Titre.Text = "Emma cherche Blandine lancé"
+        pageEsearchB.Show(Me)
+    End Sub
+
+
+
+    ''Private Sub Button_Compliment_Click(sender As Object, e As EventArgs)
+    ''    My.Computer.FileSystem.WriteAllText(Path.GetTempPath + "\ComplimentsTemp.txt", My.Resources.Compliments, False)
+    ''    Process.Start(Application.StartupPath() + "\ComplimentsTemp.txt")
+    ''    My.Computer.FileSystem.ReadAllText(Path.GetTempPath + "\ComplimentsTemp.txt")
+    ''End Sub
+
+
+    Private Sub Delete_on_quit(filepath As String)
+        Dim opened = True
+        While (opened)
+            Try
+                My.Computer.FileSystem.DeleteFile(filepath)
+                opened = False
+            Catch ex As Exception
+                If (ex.HResult = -2147024894) Then 'Erreur fichier deja supprimé
+                    opened = False
+                End If
+            End Try
+        End While
     End Sub
 
     Private Sub NotifyIcon1_MouseDoubleClick(sender As Object, e As MouseEventArgs) Handles NotifyIcon.MouseDoubleClick
@@ -153,6 +244,8 @@ Public Class Emma
         If My.Settings.SetCompliment Then
             MyTimer.Start()
         End If
+
+
     End Sub
 
     Private Sub Button_quit_Click(sender As Object, e As EventArgs) Handles Button_quit.Click
@@ -175,16 +268,14 @@ Public Class Emma
         Me.Close()
     End Sub
 
+
     Private Sub MyTimer_Tick(sender As Object, e As EventArgs) Handles MyTimer.Tick
-        Dim alea = Int(Rnd() * nb_compliment)
-        NotifyIcon.BalloonTipText = compliment(alea)
+        Dim alea = Int(Rnd() * compliment.Length)
+        NotifyIcon.BalloonTipText = Interprete_perso(compliment(alea))
         NotifyIcon.ShowBalloonTip(5000)
 
     End Sub
 
-    Private Sub Button_Compliment_Click(sender As Object, e As EventArgs) Handles Button_Compliment.Click
-        Process.Start(Application.StartupPath() + "\Compliments.txt")
-    End Sub
 
     Private Sub CheckCompliment_CheckedChanged(sender As Object, e As EventArgs) Handles CheckCompliment.CheckedChanged
         If CheckCompliment.Checked = True Then
@@ -197,6 +288,7 @@ Public Class Emma
             My.Settings.Save()
         End If
     End Sub
+
 
     Private Sub Interv_comp_ValueChanged(sender As Object, e As EventArgs) Handles interv_comp.ValueChanged
         If interv_comp.Text = 0 Then
@@ -222,7 +314,7 @@ Public Class Emma
         End If
     End Sub
 
-    Private Sub Textbox2_enter(sender As Object, e As System.Windows.Forms.KeyEventArgs) Handles TextEnvoi.KeyDown
+    Private Sub TextEnvoi_enter(sender As Object, e As System.Windows.Forms.KeyEventArgs) Handles TextEnvoi.KeyDown
         If e.KeyCode = Keys.Enter Then
             Dim f As EventArgs = New EventArgs()
             Button_msg_Click(sender, f)
@@ -231,8 +323,13 @@ Public Class Emma
 
 
     Private Sub Button_msg_Click(sender As Object, e As EventArgs) Handles Button_msg.Click
+        'If Destinataire.Text(0) = "1" Then
+        'EtatConnexion = 2
+        'Solution()
+        'End If
+
         'envoi du message
-        If (EtatConnexion = 4 Or EtatConnexion = 5) Then
+        If (EtatConnexion = 5 Or EtatConnexion = 6) Then
             Try
                 FluxWriter.WriteLine("+d+" + Destinataire.Text + "+d+" + "Message de " + user + " :" + vbCrLf + TextEnvoi.Text + vbCrLf)
                 FluxWriter.Flush()
@@ -263,7 +360,7 @@ Public Class Emma
             'Exriture du message
             If MsgRecu IsNot Nothing Then
                 Interprete_perso(MsgRecu)
-                If (MsgRecu IsNot "" Or MsgRecu IsNot vbCrLf) Then
+                If (MsgRecu <> "" And MsgRecu <> vbCrLf And Not MsgRecu.EndsWith(vbCrLf)) Then
                     NotifyIcon.BalloonTipText = MsgRecu
                     NotifyIcon.ShowBalloonTip(5000)
                 End If
@@ -279,16 +376,22 @@ Public Class Emma
         MAJvisuel()
 
         'envoi du flag
-        If EtatConnexion = 4 Or EtatConnexion = 5 Then
+        If EtatConnexion = 5 Or EtatConnexion = 6 Then
             Try
                 FluxWriter.WriteLine(flag)
                 FluxWriter.Flush()
-                Titre.Text = "Bienvenue sur la super app de" + vbCrLf + "Fx & Leon"
+                'Titre.Text = "Bienvenue sur la super app de" + vbCrLf + "Fx & Leon"
             Catch ex As Exception
                 Titre.Text = "Envoi du flag : " + ex.Message
             End Try
         End If
 
+        If (wanttoplay <> "") Then
+            MenuMorpion_Click()
+            wanttoplay = ""
+        End If
+
+        'Correction des erreurs
         Probleme()
     End Sub
 
@@ -296,54 +399,68 @@ Public Class Emma
         'connexion
         If EtatConnexion = 0 Then
             Try
-                MdlIpAdress = IPAddress.Parse(Dns.GetHostEntry("mdlserver.ddns.net").AddressList(0).ToString())
+                If Destinataire.Text(0) = "1" Then
+                    EtatConnexion = 2
+                    Exit Try
+                End If
+                ThreadFind.Abort()
+                ThreadFind = New Threading.Thread(AddressOf Find_server)
+                ThreadFind.Start()
                 EtatConnexion = 1
             Catch ex As Exception
                 Exit Sub
             End Try
         End If
 
-        'Lancement du thread de connexion
+        'attente du thread de recherche
         If EtatConnexion = 1 Then
+            If MdlIpAdress IsNot Nothing Then
+                EtatConnexion = 2
+            ElseIf Not ThreadFind.IsAlive Then
+                EtatConnexion = 0
+            End If
+        End If
+        'Lancement du thread de connexion
+        If EtatConnexion = 2 Then
             Try
                 ThreadConnect.Abort()
                 ThreadConnect = New Threading.Thread(AddressOf Connect_server)
-                    ThreadConnect.Start(Destinataire.Text)
-                    EtatConnexion = 2
-                Catch ex As Exception
+                ThreadConnect.Start(Destinataire.Text)
+                EtatConnexion = 3
+            Catch ex As Exception
                 Titre.Text = "Connection TCP : " + ex.Message
                 Exit Sub
             End Try
         End If
 
         'Attente du thread de connexion
-        If EtatConnexion = 2 And Not ThreadConnect.IsAlive Then
+        If EtatConnexion = 3 And Not ThreadConnect.IsAlive Then
             If TCPClient.Connected Then
-                EtatConnexion = 3
+                EtatConnexion = 4
             Else
-                EtatConnexion = 1
+                EtatConnexion = 2
                 Exit Sub
             End If
         End If
 
-        'lancement du stream
-        If EtatConnexion = 3 Then
+        'lancement du stream de données
+        If EtatConnexion = 4 Then
             Try
                 Flux = TCPClient.GetStream()
                 FluxWriter = New StreamWriter(Flux)
-                EtatConnexion = 4
+                EtatConnexion = 5
             Catch ex As Exception
                 Titre.Text = "Creation du flux : " + ex.Message + ERREUR
                 Exit Sub
             End Try
         End If
         'lancement du thread de reception
-        If EtatConnexion = 4 Then
+        If EtatConnexion = 5 Then
             Try
                 FluxReader = New StreamReader(Flux)
                 ThreadReceive = New Threading.Thread(AddressOf Receive_message)
                 ThreadReceive.Start()
-                EtatConnexion = 5
+                EtatConnexion = 6
             Catch ex As Exception
                 Titre.Text = "Erreur du Thread de Reception: " & vbCrLf & ex.Message & ERREUR
             End Try
@@ -351,27 +468,35 @@ Public Class Emma
     End Sub
 
     Private Sub Probleme()
-        If EtatConnexion >= 5 Then
+        If EtatConnexion >= 6 Then
             If Not ThreadReceive.IsAlive Then
                 ThreadReceive.Abort()
-                EtatConnexion = 4
+                EtatConnexion = 5
             End If
         End If
 
-        If EtatConnexion >= 2 Then
+        If EtatConnexion >= 3 Then
             If Not TCPClient.Connected And Not ThreadConnect.IsAlive Then
-                EtatConnexion = 1
+                EtatConnexion = 2
             End If
         End If
 
-        If EtatConnexion >= 1 Then
+        If EtatConnexion >= 2 And Destinataire.Text(0) <> "1" Then
             Try
                 Dns.GetHostEntry("mdlserver.ddns.net")
             Catch ex As Exception
                 EtatConnexion = 0
+                MdlIpAdress = Nothing
             End Try
         End If
     End Sub
+
+    Function Find_server()
+        Try
+            MdlIpAdress = IPAddress.Parse(Dns.GetHostEntry("mdlserver.ddns.net").AddressList(0).ToString())
+        Catch
+        End Try
+    End Function
 
     Function Connect_server(Dest As String) As Boolean
         If Dest(0) = "1" Then
@@ -385,6 +510,7 @@ Public Class Emma
         Else
             Try
                 TCPClient = New TcpClient(MdlIpAdress.ToString, "11000")
+
             Catch ex As Exception
                 If Not shutup Then
                     Titre.Invoke(SetText, New Object() {Titre, " Erreur de connexion au serveur MDL.   Le serveur a peut-etre un probleme. " + ERREUR})
@@ -399,37 +525,37 @@ Public Class Emma
 
     Private Function MAJvisuel()
         Select Case EtatConnexion
-            Case 0
+            Case 0, 1
                 MDLserverpic.Image = MDLserverpic.BackgroundImage
                 Mytooltip.SetToolTip(MDLserverpic, "MDLserveur introuvable")
-            Case 1
-                MDLserverpic.Image = MDLserverpic.ErrorImage
-                Mytooltip.SetToolTip(MDLserverpic, "MDLserveur trouvé, en attente de connection")
             Case 2
                 MDLserverpic.Image = MDLserverpic.ErrorImage
-                Mytooltip.SetToolTip(MDLserverpic, "Connection")
+                Mytooltip.SetToolTip(MDLserverpic, "MDLserveur trouvé, en attente de connection")
             Case 3
                 MDLserverpic.Image = MDLserverpic.ErrorImage
-                Mytooltip.SetToolTip(MDLserverpic, "MDl server, lien établi")
+                Mytooltip.SetToolTip(MDLserverpic, "Connection")
             Case 4
+                MDLserverpic.Image = MDLserverpic.ErrorImage
+                Mytooltip.SetToolTip(MDLserverpic, "MDl server, lien établi")
+            Case 5
                 MDLserverpic.Image = MDLserverpic.InitialImage
                 Mytooltip.SetToolTip(MDLserverpic, "Connecté")
-            Case 5
+            Case 6
                 MDLserverpic.Image = MDLserverpic.InitialImage
                 Mytooltip.SetToolTip(MDLserverpic, "Connecté, à l'écoute")
         End Select
     End Function
 
 
-    Private Function Interprete_perso(ByRef S As String)
+    Public Function Interprete_perso(ByRef S As String)
         If S = "" Or S = vbCrLf Then
             Exit Function
         End If
 
         Dim j = 0
 
-            While (j < S.Length - 1)
-            If (S.Chars(j) = "+") Then
+        While (j < S.Length - 1)
+            If (S.Chars(j) = "+" AndAlso (S.Chars(j + 1) = "w") OrElse S.Chars(j + 2) = "+") Then
                 Select Case (S.Chars(j + 1))
                     Case "u"
                         Dim temp_string = Split(S, "+u+")
@@ -444,13 +570,35 @@ Public Class Emma
                             S = S + temp_string(k)
                         Next
                     Case "w"
-                        S = S.Substring(2) + " s'est connecté"
+                        Dim k As Integer
+                        For k = 2 To S.Length - j - 1
+                            If S.Chars(j + k) = " " Then
+                                k += 1
+                                Exit For
+                            End If
+                        Next
+                        Titre.Invoke(SetText, New Object() {Titre, S.Substring(j + 2, k - 2) + " s'est connecté"})
+                        S = S.Substring(0, j) + S.Substring(j + k)
+                    Case "m"
+                        For Each f As Morpion In Application.OpenForms().OfType(Of Morpion)
+                            f.ReceiveMorpion(S.Substring(5))
+                        Next
+                        S = ""
+                    Case "l"
+                        Dim rep = MsgBox(S.Substring(5) + " voudrais jouer au morpion", vbYesNo + vbInformation)
+                        If rep = vbYes Then
+                            wanttoplay = S.Substring(5)
+                        End If
+                        If rep = vbNo Then
+                            FluxWriter.WriteLine("+d+" + S.Substring(5) + "+d+" + vbCrLf + "+m+" + "+a+" + user + "+a+" + "refus" + vbCrLf)
+                            FluxWriter.Flush()
+                        End If
+                        S = ""
                 End Select
             End If
             j += 1
         End While
         Return 0
     End Function
-
 
 End Class

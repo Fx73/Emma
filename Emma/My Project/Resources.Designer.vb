@@ -71,6 +71,47 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Recherche une chaîne localisée semblable à Leon est un navet
+        '''Mais +u+ est quelqu&apos;un de tres chouette
+        '''Et Blandine est jolie
+        '''Dylan est un super poto
+        '''+u+ est vraiment formidable
+        '''Ma vie ne serait pas la meme sans +u+ &lt;3
+        '''Je suis si heureux quand +u+ est heureux :-)
+        '''+u+, c&apos;est vraiment un chouette prenom
+        '''Va sortir t&apos;aerer, tu sera mieux qu&apos;ici ^^
+        '''Va donc dire a quelqu&apos;un a quel point il est sympa ...
+        '''I LOVE YOU
+        '''J&apos;espere que tu passe un bon moment :-)
+        '''Emma aime vraiment beaucoup les cochons. rrh rrh !.
+        '''</summary>
+        Friend ReadOnly Property Compliments() As String
+            Get
+                Return ResourceManager.GetString("Compliments", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Recherche une ressource localisée de type System.Byte[].
+        '''</summary>
+        Friend ReadOnly Property emmaeclair() As Byte()
+            Get
+                Dim obj As Object = ResourceManager.GetObject("emmaeclair", resourceCulture)
+                Return CType(obj,Byte())
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Recherche une ressource localisée de type System.Drawing.Bitmap.
+        '''</summary>
+        Friend ReadOnly Property flechebas() As System.Drawing.Bitmap
+            Get
+                Dim obj As Object = ResourceManager.GetObject("flechebas", resourceCulture)
+                Return CType(obj,System.Drawing.Bitmap)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Recherche une ressource localisée de type System.Drawing.Bitmap.
         '''</summary>
         Friend ReadOnly Property Fond() As System.Drawing.Bitmap
@@ -107,6 +148,81 @@ Namespace My.Resources
             Get
                 Dim obj As Object = ResourceManager.GetObject("MDLserverOK", resourceCulture)
                 Return CType(obj,System.Drawing.Bitmap)
+            End Get
+        End Property
+        
+        '''<summary>
+        '''  Recherche une chaîne localisée semblable à bleu
+        '''super
+        '''autre
+        '''bizarre
+        '''difficile
+        '''drôle
+        '''étrange
+        '''facile
+        '''grave
+        '''impossible
+        '''jeune
+        '''juste
+        '''libre
+        '''malade
+        '''même
+        '''pauvre
+        '''possible
+        '''propre
+        '''rouge
+        '''sale
+        '''simple
+        '''tranquille
+        '''triste
+        '''vide
+        '''bonne
+        '''toute
+        '''doux
+        '''faux
+        '''français
+        '''gros
+        '''heureux
+        '''mauvais
+        '''sérieux
+        '''vieux
+        '''vrai
+        '''ancien
+        '''beau
+        '''blanc
+        '''certain
+        '''chaud
+        '''cher
+        '''clair
+        '''content
+        '''dernier
+        '''désolé
+        '''différent
+        '''droit
+        '''entier
+        '''fort
+        '''froid
+        '''gentil
+        '''grand
+        '''haut
+        '''humain
+        '''important
+        '''joli
+        '''léger
+        '''long
+        '''meilleur
+        '''mort
+        '''noir
+        '''nouveau
+        '''pareil
+        '''petit
+        '''plein
+        '''premier
+        '''prê [le reste de la chaîne a été tronqué]&quot;;.
+        '''</summary>
+        Friend ReadOnly Property MotsPendu() As String
+            Get
+                Return ResourceManager.GetString("MotsPendu", resourceCulture)
             End Get
         End Property
         

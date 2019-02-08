@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -117,35 +117,4 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-  <data name="MDLserverOK" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\MDLserverOK.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="MDLserverKO" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\MDLserverKO.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Fond" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\440x260.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="assassinscreedii" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\assassin's-creed-ii-hd-wallpapers-32765-1127014.jpg;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="smiley" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\smiley 1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="MDLserverLinked" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\MDLserverLinked.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="emmaeclair" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\emmaeclair.exe;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="Compliments" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Compliments.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
-  <data name="flechebas" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\flechebas.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="MotsPendu" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\MotsPendu.txt;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
-  </data>
 </root>
