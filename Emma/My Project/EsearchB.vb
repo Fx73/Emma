@@ -1,11 +1,7 @@
 ﻿Public Class EsearchB
-
-    Public currentlvl As Grille
-
     Private Sub EsearchB_Load(sender As Object, e As EventArgs) Handles MyBase.Load
-        currentlvl = New Grille
-    End Sub
 
+    End Sub
 End Class
 
 

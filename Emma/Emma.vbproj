@@ -138,16 +138,10 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Application.myapp</DependentUpon>
     </Compile>
-    <Compile Include="My Project\EsearchB.designer.vb">
+    <Compile Include="My Project\EsearchB.Designer.vb">
       <DependentUpon>EsearchB.vb</DependentUpon>
     </Compile>
     <Compile Include="My Project\EsearchB.vb">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="My Project\Form1.Designer.vb">
-      <DependentUpon>Form1.vb</DependentUpon>
-    </Compile>
-    <Compile Include="My Project\Form1.vb">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="My Project\Morpion.Designer.vb">
@@ -173,9 +167,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="My Project\EsearchB.resx">
       <DependentUpon>EsearchB.vb</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="My Project\Form1.resx">
-      <DependentUpon>Form1.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="My Project\Morpion.resx">
       <DependentUpon>Morpion.vb</DependentUpon>
@@ -233,7 +224,7 @@
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">
       <Visible>False</Visible>
-      <ProductName>Microsoft .NET Framework 4.6.1 %28x86 et x64%29</ProductName>
+      <ProductName>Microsoft .NET�Framework�4.6.1 %28x86�et�x64%29</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
     <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
