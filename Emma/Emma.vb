@@ -11,7 +11,7 @@ Public Class Emma
 
     Dim user = Environment.UserName
     Dim pageMorpion As Morpion
-    Dim pageEsearchB As EsearchB = New EsearchB
+    Dim pageEsearchB As EsearchB
     Dim flag As String = "+w" + user + "+"
     Dim wanttoplay As String = ""
     Dim mot As String
@@ -203,6 +203,7 @@ Public Class Emma
     End Sub
 
     Private Sub MenuEsearchB_Click()
+        pageEsearchB = New EsearchB
         Titre.Text = "Emma cherche Blandine lancé"
         pageEsearchB.Show(Me)
     End Sub
@@ -331,7 +332,7 @@ Public Class Emma
         'envoi du message
         If (EtatConnexion = 5 Or EtatConnexion = 6) Then
             Try
-                FluxWriter.WriteLine("+d+" + Destinataire.Text + "+d+" + "Message de " + user + " :" + vbCrLf + TextEnvoi.Text + vbCrLf)
+                FluxWriter.WriteLine("+d+" + Destinataire.Text + "+d+" + "Message de " + user + " : +n+" + TextEnvoi.Text + vbCrLf)
                 FluxWriter.Flush()
                 TextEnvoi.Text = ""
                 Titre.Text = "Message bien envoyé à " + Destinataire.Text
@@ -350,7 +351,7 @@ Public Class Emma
         While (TCPClient.Connected And Not shutup)
             'Reception des données
             Try
-                MsgRecu = FluxReader.ReadLine() + vbCrLf + FluxReader.ReadLine()
+                MsgRecu = FluxReader.ReadLine()
             Catch ex As Exception
                 If Not shutup Then
                     TextRecu.Invoke(SetText, New Object() {TextRecu, "Erreur reception message : " + ex.Message})
@@ -554,7 +555,7 @@ Public Class Emma
 
         Dim j = 0
 
-        While (j < S.Length - 1)
+        While (j < S.Length - 2)
             If (S.Chars(j) = "+" AndAlso (S.Chars(j + 1) = "w") OrElse S.Chars(j + 2) = "+") Then
                 Select Case (S.Chars(j + 1))
                     Case "u"
@@ -572,28 +573,34 @@ Public Class Emma
                     Case "w"
                         Dim k As Integer
                         For k = 2 To S.Length - j - 1
-                            If S.Chars(j + k) = " " Then
+                            If S.Chars(j + k) = "+" Then
                                 k += 1
                                 Exit For
                             End If
                         Next
-                        Titre.Invoke(SetText, New Object() {Titre, S.Substring(j + 2, k - 2) + " s'est connecté"})
+                        Titre.Invoke(SetText, New Object() {Titre, S.Substring(j + 2, k - 3) + " s'est connecté"})
                         S = S.Substring(0, j) + S.Substring(j + k)
+                        j -= 1
                     Case "m"
+                        If Application.OpenForms().OfType(Of Morpion).Count = 0 Then
+                            FluxWriter.WriteLine("+d+" + S.Substring(3) + "+d++m++a+" + user + "+a+" + "quit" + vbCrLf)
+                        End If
                         For Each f As Morpion In Application.OpenForms().OfType(Of Morpion)
-                            f.ReceiveMorpion(S.Substring(5))
+                            f.ReceiveMorpion(S.Substring(3))
                         Next
                         S = ""
                     Case "l"
-                        Dim rep = MsgBox(S.Substring(5) + " voudrais jouer au morpion", vbYesNo + vbInformation)
+                        Dim rep = MsgBox(S.Substring(3) + " voudrais jouer au morpion", vbYesNo + vbInformation)
                         If rep = vbYes Then
-                            wanttoplay = S.Substring(5)
+                            wanttoplay = S.Substring(3)
                         End If
                         If rep = vbNo Then
-                            FluxWriter.WriteLine("+d+" + S.Substring(5) + "+d+" + vbCrLf + "+m+" + "+a+" + user + "+a+" + "refus" + vbCrLf)
+                            FluxWriter.WriteLine("+d+" + S.Substring(3) + "+d++m++a+" + user + "+a+" + "refus" + vbCrLf)
                             FluxWriter.Flush()
                         End If
                         S = ""
+                    Case "n"
+                        S = S.Substring(0, j) + vbCrLf + S.Substring(j + 3)
                 End Select
             End If
             j += 1

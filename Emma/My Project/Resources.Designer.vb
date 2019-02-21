@@ -122,6 +122,15 @@ Namespace My.Resources
         End Property
         
         '''<summary>
+        '''  Recherche une chaîne localisée semblable à 000.
+        '''</summary>
+        Friend ReadOnly Property Level1() As String
+            Get
+                Return ResourceManager.GetString("Level1", resourceCulture)
+            End Get
+        End Property
+        
+        '''<summary>
         '''  Recherche une ressource localisée de type System.Drawing.Bitmap.
         '''</summary>
         Friend ReadOnly Property MDLserverKO() As System.Drawing.Bitmap

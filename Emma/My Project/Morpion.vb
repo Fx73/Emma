@@ -15,7 +15,13 @@
         B.Enabled = True
         B.Text = ""
     End Sub
-
+    Delegate Sub DisableButtonDelegate(ByVal B As String, ByVal text As String)
+    Private DisableButton As New DisableButtonDelegate(AddressOf DisableB)
+    Private Sub DisableB(ByVal B As String, ByVal text As String)
+        Dim abutton = CType(Me.Controls.Find(String.Format(B), True)(0), Button)
+        abutton.Enabled = False
+        abutton.Text = text
+    End Sub
 
     Private Sub Morpion_Load(sender As Object, e As EventArgs) Handles MyBase.Load
 
@@ -30,15 +36,17 @@
 
         xturn = False
         LabelAttente.Text = "En attente de " + Adversaire
-        Emma.FluxWriter.WriteLine("+d+" + Adversaire + "+d+" + vbCrLf + "+m+" + "+a+" + Environment.UserName + "+a+" + "launch" + vbCrLf)
+        Emma.FluxWriter.WriteLine("+d+" + Adversaire + "+d+" + "+m+" + "+a+" + Environment.UserName + "+a+" + "launch" + vbCrLf)
     End Sub
 
     Private Sub ButtonOk_Click() Handles ButtonOk.Click
-        Adversaire = AdversaireBox.Text
-        LabelAdversaire.Text = Adversaire
+        If Adversaire Is Nothing Then
+            Adversaire = AdversaireBox.Text
+            LabelAdversaire.Text = Adversaire
+        End If
         If Adversaire <> "Moi" Then
             Try
-                Emma.FluxWriter.WriteLine("+d+" + Adversaire + "+d+" + vbCrLf + "+l+" + Environment.UserName + vbCrLf)
+                Emma.FluxWriter.WriteLine("+d+" + Adversaire + "+d+" + "+l+" + Environment.UserName + vbCrLf)
                 Emma.FluxWriter.Flush()
                 LabelAttente.Text = "En attente de " + Adversaire
                 DisableMorpion()
@@ -69,19 +77,20 @@
                 LabelAttente.Text = "Tour de X"
             End If
             CType(Me.Controls.Find(String.Format(sender.name), True)(0), Button).Enabled = False
+
         Else
             If xturn Then
-                Emma.FluxWriter.WriteLine("+d+" + Adversaire + "+d+" + "+m+" + vbCrLf + "+a+" + Environment.UserName + "+a+" + sender.name + vbCrLf)
+                Emma.FluxWriter.WriteLine("+d+" + Adversaire + "+d+" + "+m+" + "+a+" + Environment.UserName + "+a+" + sender.name + vbCrLf)
                 Emma.FluxWriter.Flush()
                 CType(Me.Controls.Find(String.Format(sender.name), True)(0), Button).Text = "X"
                 grid.getcase(sender.name).croix = True
                 xturn = False
                 LabelAttente.Visible = True
-                CType(Me.Controls.Find(String.Format(sender.name), True)(0), Button).Enabled = False
             End If
         End If
         FinMorpion()
     End Sub
+
 
     Public Function ReceiveMorpion(S As String)
         Dim Stemp() As String = S.Split({"+a+"}, StringSplitOptions.None)
@@ -97,16 +106,18 @@
             LabelAttente.Invoke(SetText, New Object() {LabelAdversaire, "Tour de " + Adversaire})
         ElseIf (S = "refus") Then
             MsgBox(Adversaire + " a refusé la partie", vbCritical)
+        ElseIf (S = "quit") Then
+            MsgBox(Adversaire + " a quitté la partie, tu es vainqueur par abandon", vbExclamation)
+            Me.Close()
         Else
-            CType(Me.Controls.Find(String.Format(S), True)(0), Button).Text = "X"
-            grid.getcase(S).croix = True
+            grid.getcase(S).rond = True
             xturn = True
-            LabelAttente.Visible = False
-            CType(Me.Controls.Find(String.Format(S), True)(0), Button).Enabled = False
-
+            LabelAttente.Invoke(SetText, New Object() {LabelAdversaire, "Tour de " + Adversaire})
+            CType(Me.Controls.Find(String.Format(S), True)(0), Button).Invoke(DisableButton, {S, "O"})
             FinMorpion()
         End If
     End Function
+
 
     Function FinMorpion()
         Dim fin As Int16 = 0
@@ -122,17 +133,31 @@
         End If
 
         If fin = -1 Then
-            LabelAdversaire.Text += " : Gagné"
+            Try
+                LabelAdversaire.Text = Environment.UserName + " gagne la partie"
+            Catch
+                LabelAdversaire.Invoke(SetText, New Object() {LabelAdversaire, Environment.UserName + " gagne la partie"})
+            End Try
             MsgBox("Bravo, Gagné !", vbExclamation)
             DisableMorpion()
+            Replay()
         End If
         If fin = -2 Then
-            LabelAdversaire.Text += " : Perdu"
+            Try
+                LabelAdversaire.Text = Adversaire + " : gagne la partie"
+            Catch
+                LabelAdversaire.Invoke(SetText, New Object() {LabelAdversaire, Adversaire + " gagne la partie"})
+            End Try
             MsgBox("Haha, Perdu !", vbCritical)
             DisableMorpion()
+            Replay()
         End If
         If fin = 0 And grid.Iscomplete() Then
-            LabelAdversaire.Text += " : Egalité"
+            Try
+                LabelAdversaire.Text += "Egalité"
+            Catch
+                LabelAdversaire.Invoke(SetText, New Object() {LabelAdversaire, "Egalité"})
+            End Try
             MsgBox("Egalité ! --'", vbInformation)
             DisableMorpion()
             Replay()
@@ -141,15 +166,31 @@
     End Function
 
     Function DisableMorpion()
-        A1.Enabled = False
-        A2.Enabled = False
-        A3.Enabled = False
-        B1.Enabled = False
-        B2.Enabled = False
-        B3.Enabled = False
-        C1.Enabled = False
-        C2.Enabled = False
-        C3.Enabled = False
+        Try
+            A1.Enabled = False
+            A2.Enabled = False
+            A3.Enabled = False
+            B1.Enabled = False
+            B2.Enabled = False
+            B3.Enabled = False
+            C1.Enabled = False
+            C2.Enabled = False
+            C3.Enabled = False
+        Catch
+            DisableMorpionbyInvoke()
+        End Try
+    End Function
+
+    Function DisableMorpionbyInvoke()
+        A1.Invoke(DisableButton, {"A1", ""})
+        A2.Invoke(DisableButton, {"A2", ""})
+        A3.Invoke(DisableButton, {"A3", ""})
+        B1.Invoke(DisableButton, {"B1", ""})
+        B2.Invoke(DisableButton, {"B2", ""})
+        B3.Invoke(DisableButton, {"B3", ""})
+        C1.Invoke(DisableButton, {"C1", ""})
+        C2.Invoke(DisableButton, {"C2", ""})
+        C3.Invoke(DisableButton, {"C3", ""})
     End Function
 
     Function EnableMorpion()

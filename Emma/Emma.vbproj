@@ -138,12 +138,14 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Application.myapp</DependentUpon>
     </Compile>
+    <Compile Include="My Project\Class1.vb" />
     <Compile Include="My Project\EsearchB.Designer.vb">
       <DependentUpon>EsearchB.vb</DependentUpon>
     </Compile>
     <Compile Include="My Project\EsearchB.vb">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="My Project\Grille.vb" />
     <Compile Include="My Project\Morpion.Designer.vb">
       <DependentUpon>Morpion.vb</DependentUpon>
     </Compile>
@@ -187,6 +189,8 @@
       <Generator>MyApplicationCodeGenerator</Generator>
       <LastGenOutput>Application.Designer.vb</LastGenOutput>
     </None>
+    <None Include="My Project\DataSources\EsearchB.datasource" />
+    <None Include="My Project\DataSources\Grille.datasource" />
     <None Include="My Project\DataSources\MorpionGrid.datasource" />
     <None Include="My Project\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -219,6 +223,7 @@
     <None Include="Resources\MotsPendu.txt" />
     <None Include="Resources\Image1.bmp" />
     <None Include="Resources\flechebas.png" />
+    <None Include="Resources\Level1.txt" />
     <Content Include="smiley_2.png.ico" />
   </ItemGroup>
   <ItemGroup>
