@@ -28,7 +28,7 @@ Partial Class Emma
         Me.Button_Accept = New System.Windows.Forms.Button()
         Me.Titre = New System.Windows.Forms.TextBox()
         Me.Button_quit = New System.Windows.Forms.Button()
-        Me.MyTimer = New System.Windows.Forms.Timer(Me.components)
+        Me.NotifyTimer = New System.Windows.Forms.Timer(Me.components)
         Me.Options = New System.Windows.Forms.CheckBox()
         Me.Button_msg = New System.Windows.Forms.Button()
         Me.CheckBoot = New System.Windows.Forms.CheckBox()
@@ -67,6 +67,7 @@ Partial Class Emma
         Me.ButtonB = New System.Windows.Forms.Button()
         Me.ButtonA = New System.Windows.Forms.Button()
         Me.BarPendu = New System.Windows.Forms.ProgressBar()
+        Me.ShutdownTimer = New System.Windows.Forms.Timer(Me.components)
         CType(Me.interv_comp, System.ComponentModel.ISupportInitialize).BeginInit()
         CType(Me.MDLserverpic, System.ComponentModel.ISupportInitialize).BeginInit()
         Me.LettresGrid.SuspendLayout()
@@ -110,10 +111,10 @@ Partial Class Emma
         Me.Button_quit.Text = "Button_quit"
         Me.Button_quit.UseVisualStyleBackColor = True
         '
-        'MyTimer
+        'NotifyTimer
         '
-        Me.MyTimer.Enabled = True
-        Me.MyTimer.Interval = 20000
+        Me.NotifyTimer.Enabled = True
+        Me.NotifyTimer.Interval = 20000
         '
         'Options
         '
@@ -524,6 +525,10 @@ Partial Class Emma
         Me.BarPendu.TabIndex = 18
         Me.BarPendu.Visible = False
         '
+        'ShutdownTimer
+        '
+        Me.ShutdownTimer.Interval = 60000
+        '
         'Emma
         '
         Me.AutoScaleDimensions = New System.Drawing.SizeF(6.0!, 13.0!)
@@ -563,7 +568,7 @@ Partial Class Emma
     Friend WithEvents Button_Accept As Button
     Friend WithEvents Titre As TextBox
     Friend WithEvents Button_quit As Button
-    Friend WithEvents MyTimer As Timer
+    Friend WithEvents NotifyTimer As Timer
     Friend WithEvents Options As CheckBox
     Friend WithEvents Button_msg As Button
     Friend WithEvents CheckBoot As CheckBox
@@ -602,4 +607,5 @@ Partial Class Emma
     Friend WithEvents ButtonD As Button
     Friend WithEvents ButtonC As Button
     Friend WithEvents BarPendu As ProgressBar
+    Friend WithEvents ShutdownTimer As Timer
 End Class

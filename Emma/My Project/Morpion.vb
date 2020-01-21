@@ -92,11 +92,11 @@
     End Sub
 
 
-    Public Function ReceiveMorpion(S As String)
+    Public Sub ReceiveMorpion(S As String)
         Dim Stemp() As String = S.Split({"+a+"}, StringSplitOptions.None)
 
         If Not Stemp(1) = Adversaire Then
-            Exit Function
+            Exit Sub
         End If
 
         S = Stemp(2)
@@ -116,10 +116,10 @@
             CType(Me.Controls.Find(String.Format(S), True)(0), Button).Invoke(DisableButton, {S, "O"})
             FinMorpion()
         End If
-    End Function
+    End Sub
 
 
-    Function FinMorpion()
+    Sub FinMorpion()
         Dim fin As Int16 = 0
 
         If (grid.Eg(grid.A1, grid.A2) And grid.Eg(grid.A1, grid.A3)) Or (grid.Eg(grid.A1, grid.B1) And grid.Eg(grid.A1, grid.C1)) Then
@@ -163,9 +163,9 @@
             Replay()
         End If
 
-    End Function
+    End Sub
 
-    Function DisableMorpion()
+    Sub DisableMorpion()
         Try
             A1.Enabled = False
             A2.Enabled = False
@@ -179,9 +179,9 @@
         Catch
             DisableMorpionbyInvoke()
         End Try
-    End Function
+    End Sub
 
-    Function DisableMorpionbyInvoke()
+    Sub DisableMorpionbyInvoke()
         A1.Invoke(DisableButton, {"A1", ""})
         A2.Invoke(DisableButton, {"A2", ""})
         A3.Invoke(DisableButton, {"A3", ""})
@@ -191,9 +191,9 @@
         C1.Invoke(DisableButton, {"C1", ""})
         C2.Invoke(DisableButton, {"C2", ""})
         C3.Invoke(DisableButton, {"C3", ""})
-    End Function
+    End Sub
 
-    Function EnableMorpion()
+    Sub EnableMorpion()
         Try
             A1.Enabled = True
             A2.Enabled = True
@@ -216,9 +216,9 @@
         Catch
             EnableMorpionbyInvoke()
         End Try
-    End Function
+    End Sub
 
-    Function EnableMorpionbyInvoke()
+    Sub EnableMorpionbyInvoke()
         A1.Invoke(EnableButton, A1)
         A2.Invoke(EnableButton, A2)
         A3.Invoke(EnableButton, A3)
@@ -228,9 +228,9 @@
         C1.Invoke(EnableButton, C1)
         C2.Invoke(EnableButton, C2)
         C3.Invoke(EnableButton, C3)
-    End Function
+    End Sub
 
-    Function Replay()
+    Sub Replay()
         Dim rep = MsgBox("Refaire une partie ?", vbYesNo + vbQuestion + vbDefaultButton1)
         If rep = vbYes Then
             ButtonOk_Click()
@@ -238,7 +238,7 @@
         If rep = vbNo Then
             Me.Close()
         End If
-    End Function
+    End Sub
 End Class
 
 Public Class MorpionGrid

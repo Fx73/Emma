@@ -18,7 +18,7 @@ Public Class Emma
     Const ERREUR As String = "Essaie de relancer l'app et contacte FX ou Leon"
     Dim Mytooltip As New ToolTip
     Dim lettres(25) As Boolean ''= false by default
-
+    Dim servername As String = "emma-server.herokuapp.com"
     Dim compliment As String()
     Dim shutup As Boolean = False
 
@@ -33,6 +33,7 @@ Public Class Emma
     Public ThreadDelonQuit As System.Threading.Thread = New Threading.Thread(AddressOf Delete_on_quit)
     Dim MdlIpAdress As IPAddress
     Dim EtatConnexion As Integer = 0
+    Dim ShutdownCount = 60
     '- 0 server introuvable
     '- 1 en recherche du server
     '- 2 trouvé mais TCP unlinked
@@ -78,8 +79,8 @@ Public Class Emma
 
         'Lancement des compliments
         compliment = Split(My.Resources.Compliments, vbCrLf)
-        MyTimer.Interval = 60000 * interv_comp.Text + 1
-        MyTimer.Stop()
+        NotifyTimer.Interval = 60000 * interv_comp.Text + 1
+        NotifyTimer.Stop()
 
         'Lancement du client
         'TCPListener.Start() 'a ajouter pour pouvoir faire du peerTopeer
@@ -243,7 +244,7 @@ Public Class Emma
     Private Sub Button_Accept_Click(sender As Object, e As EventArgs) Handles Button_Accept.Click
         Me.Hide()
         If My.Settings.SetCompliment Then
-            MyTimer.Start()
+            NotifyTimer.Start()
         End If
 
 
@@ -270,21 +271,30 @@ Public Class Emma
     End Sub
 
 
-    Private Sub MyTimer_Tick(sender As Object, e As EventArgs) Handles MyTimer.Tick
-        Dim alea = Int(Rnd() * compliment.Length)
-        NotifyIcon.BalloonTipText = Interprete_perso(compliment(alea))
+    Private Sub MyTimer_Tick(sender As Object, e As EventArgs) Handles NotifyTimer.Tick
+        Dim comp = Interprete_Receive(compliment(Int(Rnd() * compliment.Length)))
+        NotifyIcon.BalloonTipText = comp
         NotifyIcon.ShowBalloonTip(5000)
 
+    End Sub
+
+    Private Sub ShutdownTimer_Tick(sender As Object, e As EventArgs) Handles ShutdownTimer.Tick
+        ShutdownCount -= 1
+        Titre.Text = "Temp restant avant extinction du PC : " + ShutdownCount
+
+        If ShutdownCount = 0 Then
+            System.Diagnostics.Process.Start("shutdown", "-s -t 00")
+        End If
     End Sub
 
 
     Private Sub CheckCompliment_CheckedChanged(sender As Object, e As EventArgs) Handles CheckCompliment.CheckedChanged
         If CheckCompliment.Checked = True Then
-            MyTimer.Start()
+            NotifyTimer.Start()
             My.Settings.SetCompliment = True
             My.Settings.Save()
         Else
-            MyTimer.Stop()
+            NotifyTimer.Stop()
             My.Settings.SetCompliment = False
             My.Settings.Save()
         End If
@@ -293,9 +303,9 @@ Public Class Emma
 
     Private Sub Interv_comp_ValueChanged(sender As Object, e As EventArgs) Handles interv_comp.ValueChanged
         If interv_comp.Text = 0 Then
-            MyTimer.Interval = 1000
+            NotifyTimer.Interval = 1000
         Else
-            MyTimer.Interval = 60000 * interv_comp.Text
+            NotifyTimer.Interval = 60000 * interv_comp.Text
         End If
     End Sub
 
@@ -329,6 +339,8 @@ Public Class Emma
         'Solution()
         'End If
 
+        If Interprete_Send(TextEnvoi.Text) <> 0 Then Exit Sub
+
         'envoi du message
         If (EtatConnexion = 5 Or EtatConnexion = 6) Then
             Try
@@ -360,7 +372,7 @@ Public Class Emma
 
             'Exriture du message
             If MsgRecu IsNot Nothing Then
-                Interprete_perso(MsgRecu)
+                Interprete_Receive(MsgRecu)
                 If (MsgRecu <> "" And MsgRecu <> vbCrLf And Not MsgRecu.EndsWith(vbCrLf)) Then
                     NotifyIcon.BalloonTipText = MsgRecu
                     NotifyIcon.ShowBalloonTip(5000)
@@ -484,7 +496,7 @@ Public Class Emma
 
         If EtatConnexion >= 2 And Destinataire.Text(0) <> "1" Then
             Try
-                Dns.GetHostEntry("mdlserver.ddns.net")
+                Dns.GetHostEntry(servername)
             Catch ex As Exception
                 EtatConnexion = 0
                 MdlIpAdress = Nothing
@@ -492,12 +504,12 @@ Public Class Emma
         End If
     End Sub
 
-    Function Find_server()
+    Sub Find_server()
         Try
-            MdlIpAdress = IPAddress.Parse(Dns.GetHostEntry("mdlserver.ddns.net").AddressList(0).ToString())
+            MdlIpAdress = IPAddress.Parse(Dns.GetHostEntry(servername).AddressList(0).ToString())
         Catch
         End Try
-    End Function
+    End Sub
 
     Function Connect_server(Dest As String) As Boolean
         If Dest(0) = "1" Then
@@ -524,7 +536,7 @@ Public Class Emma
     End Function
 
 
-    Private Function MAJvisuel()
+    Private Sub MAJvisuel()
         Select Case EtatConnexion
             Case 0, 1
                 MDLserverpic.Image = MDLserverpic.BackgroundImage
@@ -545,12 +557,12 @@ Public Class Emma
                 MDLserverpic.Image = MDLserverpic.InitialImage
                 Mytooltip.SetToolTip(MDLserverpic, "Connecté, à l'écoute")
         End Select
-    End Function
+    End Sub
 
 
-    Public Function Interprete_perso(ByRef S As String)
+    Public Function Interprete_Receive(ByRef S As String) As Integer
         If S = "" Or S = vbCrLf Then
-            Exit Function
+            Return -1
         End If
 
         Dim j = 0
@@ -607,5 +619,17 @@ Public Class Emma
         End While
         Return 0
     End Function
+
+    Public Function Interprete_Send(ByRef S As String) As Integer
+        If S.Length >= 10 AndAlso S.Trim.Substring(0, 8).ToUpper = "SHUTDOWN" Then
+            ShutdownCount = S.Trim.Substring(9)
+            ShutdownTimer.Start()
+            Titre.Text = "Shutdown lancé :" + vbCrLf + " Temp restant avant extinction du PC : " + ShutdownCount
+            Return 1
+        End If
+
+        Return 0
+    End Function
+
 
 End Class
