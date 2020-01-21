@@ -280,7 +280,7 @@ Public Class Emma
 
     Private Sub ShutdownTimer_Tick(sender As Object, e As EventArgs) Handles ShutdownTimer.Tick
         ShutdownCount -= 1
-        Titre.Text = "Temp restant avant extinction du PC : " + ShutdownCount
+        Titre.Text = "Temp restant avant extinction du PC :" + vbCrLf + ShutdownCount.ToString
 
         If ShutdownCount = 0 Then
             System.Diagnostics.Process.Start("shutdown", "-s -t 00")
@@ -621,10 +621,10 @@ Public Class Emma
     End Function
 
     Public Function Interprete_Send(ByRef S As String) As Integer
-        If S.Length >= 10 AndAlso S.Trim.Substring(0, 8).ToUpper = "SHUTDOWN" Then
-            ShutdownCount = S.Trim.Substring(9)
+        If S.Length >= 8 AndAlso S.Trim.Substring(0, 8).ToUpper = "SHUTDOWN" Then
+            If S.Length >= 10 Then ShutdownCount = S.Trim.Substring(9)
             ShutdownTimer.Start()
-            Titre.Text = "Shutdown lancé :" + vbCrLf + " Temp restant avant extinction du PC : " + ShutdownCount
+            Titre.Text = "Shutdown lancé :" + vbCrLf + " Temp restant avant extinction du PC : " + ShutdownCount.ToString
             Return 1
         End If
 
