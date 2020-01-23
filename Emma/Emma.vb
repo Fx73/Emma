@@ -95,7 +95,7 @@ Public Class Emma
         Dim MenuEclair As New MenuItem("Eclair")
         Dim MenuPendu As New MenuItem("Pendu")
         Dim MenuMorpion As New MenuItem("Morpion")
-        Dim MenuEsearchB As New MenuItem("Emma cherche Blandine")
+        Dim MenuEsearchB As New MenuItem("Escape")
         Dim MenuExit As New MenuItem("Exit")
         contextMenu.MenuItems.Add(MenuEclair)
         contextMenu.MenuItems.Add(MenuPendu)
@@ -324,10 +324,6 @@ Public Class Emma
 
 
     Private Sub Button_msg_Click(sender As Object, e As EventArgs) Handles Button_msg.Click
-        'If Destinataire.Text(0) = "1" Then
-        'EtatConnexion = 2
-        'Solution()
-        'End If
 
         'envoi du message
         If (EtatConnexion = 5 Or EtatConnexion = 6) Then
@@ -605,7 +601,7 @@ Public Class Emma
             End If
             j += 1
         End While
-        Return 0
+        Return S
     End Function
 
 End Class

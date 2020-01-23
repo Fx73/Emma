@@ -138,7 +138,6 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Application.myapp</DependentUpon>
     </Compile>
-    <Compile Include="My Project\Class1.vb" />
     <Compile Include="My Project\EsearchB.Designer.vb">
       <DependentUpon>EsearchB.vb</DependentUpon>
     </Compile>
@@ -224,6 +223,9 @@
     <None Include="Resources\Image1.bmp" />
     <None Include="Resources\flechebas.png" />
     <None Include="Resources\Level1.txt" />
+    <None Include="Resources\vide.png" />
+    <None Include="Resources\Level2.txt" />
+    <None Include="Resources\Level21.txt" />
     <Content Include="smiley_2.png.ico" />
   </ItemGroup>
   <ItemGroup>
