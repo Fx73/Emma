@@ -55,7 +55,7 @@ Public Class Emma
         'Visuel de l'app
         Me.Height -= 100
         NotifyIcon.Text = "Mot du jour"
-        Titre.Text = "Bienvenue sur la super app de" + vbCrLf + "Fx & Leon"
+        Titre.Text = "Bienvenue sur la super app de" + vbCrLf + "Fx & Leon  " + My.Application.Info.Version.Major.ToString + "." + My.Application.Info.Version.Minor.ToString
         Titre.TextAlign = HorizontalAlignment.Center
         Titre.Font = New Font("Berlin Sans FB Demi", 14, FontStyle.Bold)
         Titre.CharacterCasing = CharacterCasing.Upper

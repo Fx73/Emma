@@ -119,25 +119,25 @@
         End If
     End Sub
 
-    Private Function Deplacement(e As Keys)
+    Private Sub Deplacement(e As Keys)
         Dim a = Collision(e)
         While a
             MyDataGridView.Rows(current.y).Cells(current.x).Value = ""
             Select Case e
-                    Case Keys.Left
-                        current.x = current.x - 1
-                    Case Keys.Right
-                        current.x = current.x + 1
-                    Case Keys.Up
-                        current.y = current.y - 1
-                    Case Keys.Down
-                        current.y = current.y + 1
-                End Select
+                Case Keys.Left
+                    current.x = current.x - 1
+                Case Keys.Right
+                    current.x = current.x + 1
+                Case Keys.Up
+                    current.y = current.y - 1
+                Case Keys.Down
+                    current.y = current.y + 1
+            End Select
             MyDataGridView.Rows(current.y).Cells(current.x).Value = "X"
             a = Collision(e)
             Threading.Thread.Sleep(20)
         End While
-    End Function
+    End Sub
 
     Private Function Collision(ByRef e As Keys) As Int32
         Dim rep = ""
