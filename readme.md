@@ -7,6 +7,6 @@ V4.1 :
  - Message Perso (Integration d'un programme externe)
  - Lancement au démarrage 
  - Jeux : 
-    - Morpion (loval/reseau)
+    - Morpion (local/reseau)
     - Pendu
     - Escape
