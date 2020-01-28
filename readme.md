@@ -1,4 +1,4 @@
-Emma : Petit logiciel utilitaire très leger (Win)
+<b>Emma : Petit logiciel utilitaire très leger (Win)</b>
 
 V4.1 : 
  - Notification customisée
@@ -10,3 +10,7 @@ V4.1 :
     - Morpion (local/reseau)
     - Pendu
     - Escape
+    
+    
+Depot Azure Original :
+https://dev.azure.com/CochonCorp/Emma
