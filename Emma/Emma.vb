@@ -15,7 +15,7 @@ Public Class Emma
     Dim flag As String = "+w" + user + "+"
     Dim wanttoplay As String = ""
     Dim mot As String
-    Const ERREUR As String = "Essaie de relancer l'app et contacte FX ou Leon"
+    Const ERREUR As String = "Essaie de relancer l'app et/ou contacte moi : fx73000@yahoo.fr"
     Dim Mytooltip As New ToolTip
     Dim lettres(25) As Boolean ''= false by default
     Dim servername As String = "emma-server.herokuapp.com"
@@ -54,14 +54,14 @@ Public Class Emma
 
         'Visuel de l'app
         Me.Height -= 100
-        NotifyIcon.Text = "Mot du jour"
-        Titre.Text = "Bienvenue sur la super app de" + vbCrLf + "Fx & Leon  " + My.Application.Info.Version.Major.ToString + "." + My.Application.Info.Version.Minor.ToString
+        NotifyIcon.Text = "Emma"
+        Titre.Text = "Bienvenue, je suis Emma" + vbCrLf + My.Application.Info.Version.Major.ToString + "." + My.Application.Info.Version.Minor.ToString
         Titre.TextAlign = HorizontalAlignment.Center
         Titre.Font = New Font("Berlin Sans FB Demi", 14, FontStyle.Bold)
         Titre.CharacterCasing = CharacterCasing.Upper
-        Button_Accept.Text = "J'aime bien votre appli, vous etes des gens biens :-)"
-        Button_quit.Text = "Nan, C'est tout nul. Ciao"
-        Button_msg.Text = "Envoyer un mot d'amour"
+        Button_Accept.Text = "Cache-toi dans le coin en bas à droite ;-)"
+        Button_quit.Text = "Bye, Emma"
+        Button_msg.Text = "Envoyer un message"
         CheckBoot.Text = "Lancer au demarrage"
         Mytooltip.ShowAlways = True
         Mytooltip.IsBalloon = True
@@ -93,12 +93,12 @@ Public Class Emma
     Public Sub CreateContextMenu()
         'Define New Context Menu and Menu Item 
         Dim contextMenu As New ContextMenu
-        Dim MenuEclair As New MenuItem("Eclair")
+        'Dim MenuEclair As New MenuItem("Eclair")
         Dim MenuPendu As New MenuItem("Pendu")
         Dim MenuMorpion As New MenuItem("Morpion")
         Dim MenuEsearchB As New MenuItem("Escape")
         Dim MenuExit As New MenuItem("Exit")
-        contextMenu.MenuItems.Add(MenuEclair)
+        'contextMenu.MenuItems.Add(MenuEclair)
         contextMenu.MenuItems.Add(MenuPendu)
         contextMenu.MenuItems.Add(MenuMorpion)
         contextMenu.MenuItems.Add(MenuEsearchB)
