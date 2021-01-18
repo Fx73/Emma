@@ -21,6 +21,14 @@ L'objectif du projet etait surtout de décourvir le .Net, et de répondre à un 
 L'ensemble à été réalisé en Vb.Net sous Visual Studio, qui permet de créer l'interface presque sans toucher au XML.
 Le serveur est en python, et se trouve dans les sources.
 
+<h2>Compilation</h2>
+
+<i>Il s'agit d'une application .Net, donc compilable et executable sous Windows.</i>
+Telecharger le projet et le décompresser
+
+Ouvrir l'invite de commande et se placer dans le repertoire de projet (où doit se trouver "Emma.sln")
+
+Executer : C:\Windows\Microsoft.NET\Framework64\v4.0.30319\MSBuild "Emma.sln" /p:Configuration=Release
     
 Depot Azure Original :
 https://dev.azure.com/CochonCorp/Emma
